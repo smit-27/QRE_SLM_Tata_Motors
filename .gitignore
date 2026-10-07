@@ -1,0 +1,5 @@
+data/raw/
+data/raw/_downloads/
+docs/*.log
+__pycache__/
+*.part

@@ -1,0 +1,70 @@
+# QRE corpus - harvest configuration (Layer 2 of the plan)
+# Starred sources from the framework are harvested by the new scripts in harvest/.
+# NTRS, EverySpec, NIST, arXiv, DTIC stay on the existing qa-graphrag harvester
+# and are converted with harvest/adapt_existing.py.
+
+contact_email: "krishplagad0503@gmail.com"   # put a real address; sent in the User-Agent
+raw_dir: "data/raw"
+shard_docs: 50000                         # documents per output shard
+
+nhtsa:
+  licence: "US public domain"
+  # Primary URLs, then legacy fallbacks. If NHTSA moves a file, edit here.
+  datasets:
+    complaints:
+      urls:
+        - "https://static.nhtsa.gov/odi/ffdd/cmpl/FLAT_CMPL.zip"
+        - "http://www-odi.nhtsa.dot.gov/downloads/folders/Complaints/FLAT_CMPL.zip"
+      dictionary:
+        - "https://static.nhtsa.gov/odi/ffdd/cmpl/CMPL.txt"
+        - "http://www-odi.nhtsa.dot.gov/downloads/folders/Complaints/CMPL.txt"
+      text_fields: ["CDESCR"]
+      title_fields: ["MAKETXT", "MODELTXT", "YEARTXT", "COMPDESC"]
+      id_field: "CMPLID"
+      default_vertical: "engineering"
+    recalls:
+      # NHTSA now splits recalls into two zips (FLAT_RCL.zip no longer exists)
+      parts:
+        - "https://static.nhtsa.gov/odi/ffdd/rcl/FLAT_RCL_PRE_2010.zip"
+        - "https://static.nhtsa.gov/odi/ffdd/rcl/FLAT_RCL_POST_2010.zip"
+      dictionary:
+        - "https://static.nhtsa.gov/odi/ffdd/rcl/RCL.txt"
+        - "http://www-odi.nhtsa.dot.gov/downloads/folders/Recalls/RCL.txt"
+      # NHTSA spells it CONEQUENCE_DEFECT; both spellings listed on purpose
+      text_fields: ["DESC_DEFECT", "CONEQUENCE_DEFECT", "CONSEQUENCE_DEFECT", "CORRECTIVE_ACTION", "NOTES"]
+      title_fields: ["MAKETXT", "MODELTXT", "YEARTXT", "COMPNAME"]
+      id_field: "RECORD_ID"
+      default_vertical: "engineering"
+    investigations:
+      urls:
+        - "https://static.nhtsa.gov/odi/ffdd/inv/FLAT_INV.zip"
+        - "http://www-odi.nhtsa.dot.gov/downloads/folders/Investigations/FLAT_INV.zip"
+      dictionary:
+        - "https://static.nhtsa.gov/odi/ffdd/inv/INV.txt"
+        - "http://www-odi.nhtsa.dot.gov/downloads/folders/Investigations/INV.txt"
+      text_fields: ["SUBJECT", "SUMMARY"]
+      title_fields: ["MAKE", "MODEL", "YEAR", "COMPNAME"]
+      id_field: "FIELD_1"
+      default_vertical: "engineering"
+
+uspto:
+  licence: "US public domain"
+  api_base: "https://api.uspto.gov"
+  product_id: "PTGRXML"          # patent grant full text, no images
+  # Add "APPXML" in products to also pull applications (much larger)
+  products: ["PTGRXML"]
+  from_date: "2010-01-01"
+  to_date: "2026-09-30"
+  include_claims: false          # claims are legal boilerplate; the plan says strip them
+  min_chars: 1500
+  # CPC prefixes from the framework (matched against e.g. "B60R", "F16H")
+  cpc_prefixes: ["B60", "B62D", "F02", "F16", "G01M", "G05B"]
+  default_vertical: "engineering"
+
+ecfr:
+  licence: "US government (public domain)"
+  title: 49
+  # 571 = FMVSS, 573 = defect and noncompliance responsibility and reports,
+  # 577 = defect and noncompliance notification, 579 = early warning reporting
+  parts: [571, 573, 577, 579]
+  default_vertical: "engineering"
