@@ -3,3 +3,13 @@ data/raw/_downloads/
 docs/*.log
 __pycache__/
 *.part
+
+# Environments
+.env
+.venv
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
