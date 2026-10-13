@@ -1,4 +1,5 @@
 data/raw/
+data/processed/
 data/raw/_downloads/
 docs/*.log
 __pycache__/
